@@ -1,0 +1,339 @@
+/* OpportunityBug - Custom Styles */
+
+/* ===== Safari Compatibility ===== */
+/* Ensure nav is always visible */
+nav {
+    position: -webkit-sticky;
+    position: sticky;
+    display: -webkit-flex;
+    display: flex;
+}
+
+/* Safari flexbox gap fallback */
+@supports not (gap: 1rem) {
+    .space-x-8 > * + * {
+        margin-left: 2rem;
+    }
+    .space-x-1 > * + * {
+        margin-left: 0.25rem;
+    }
+    .gap-2 > * + * {
+        margin-left: 0.5rem;
+    }
+    .gap-4 > * + * {
+        margin-left: 1rem;
+    }
+}
+
+/* Ensure images load */
+img {
+    display: inline-block;
+    max-width: 100%;
+    height: auto;
+}
+
+/* Force nav visibility */
+nav.sticky {
+    top: 0;
+    z-index: 40;
+}
+
+/* ===== Card Transitions ===== */
+.opportunity-card {
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+                opacity 0.2s ease-out;
+}
+
+.opportunity-card.active {
+    transform: translateX(0) rotate(0);
+    opacity: 1;
+}
+
+.opportunity-card.hidden {
+    display: none;
+}
+
+/* Swipe animations */
+.opportunity-card.swipe-left {
+    transform: translateX(-120%) rotate(-8deg);
+    opacity: 0;
+}
+
+.opportunity-card.swipe-right {
+    transform: translateX(120%) rotate(8deg);
+    opacity: 0;
+}
+
+/* ===== Rating Buttons ===== */
+.rating-btn {
+    transform: scale(1);
+    transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.rating-btn:hover {
+    transform: scale(1.15) translateY(-2px);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+.rating-btn:active {
+    transform: scale(0.9);
+}
+
+/* Rating button pulse animation on selection */
+.rating-btn.selected {
+    animation: pulse-ring 0.4s ease-out;
+}
+
+@keyframes pulse-ring {
+    0% { box-shadow: 0 0 0 0 currentColor; }
+    100% { box-shadow: 0 0 0 12px transparent; }
+}
+
+/* ===== Progress Bar Animations ===== */
+.progress-fill {
+    animation: grow-width 0.8s ease-out forwards;
+    transform-origin: left;
+}
+
+@keyframes grow-width {
+    from { transform: scaleX(0); }
+    to { transform: scaleX(1); }
+}
+
+/* Progress bar base */
+.h-3 > div,
+.h-2 > div,
+.h-4 > div,
+.h-6 > div {
+    transition: width 0.5s ease-out;
+}
+
+/* ===== Toast Animations ===== */
+#toast-container > div {
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* ===== Type Badge Colors ===== */
+.type-badge-fellowship {
+    background-color: #f3e8ff;
+    color: #7c3aed;
+}
+
+.type-badge-internship {
+    background-color: #dbeafe;
+    color: #2563eb;
+}
+
+.type-badge-hackathon {
+    background-color: #ffedd5;
+    color: #ea580c;
+}
+
+.type-badge-job {
+    background-color: #d1fae5;
+    color: #059669;
+}
+
+/* ===== Deadline Urgency ===== */
+.deadline-urgent {
+    color: #dc2626;
+    font-weight: 600;
+}
+
+.deadline-urgent::before {
+    content: '';
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    background-color: #dc2626;
+    border-radius: 50%;
+    margin-right: 6px;
+    animation: pulse-dot 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse-dot {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(1.2); }
+}
+
+.deadline-soon {
+    color: #d97706;
+}
+
+.deadline-soon::before {
+    content: '';
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    background-color: #d97706;
+    border-radius: 50%;
+    margin-right: 6px;
+}
+
+/* ===== Score Colors ===== */
+.score-high {
+    color: #16a34a;
+}
+
+.score-medium {
+    color: #ca8a04;
+}
+
+.score-low {
+    color: #dc2626;
+}
+
+/* ===== Skeleton Loading ===== */
+.skeleton {
+    animation: skeleton-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes skeleton-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+/* ===== Mobile Navigation ===== */
+.safe-area-pb {
+    padding-bottom: env(safe-area-inset-bottom, 0);
+}
+
+/* ===== Keyboard Hint Styling ===== */
+kbd {
+    font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+    font-size: 0.75rem;
+    background-color: #f3f4f6;
+    border: 1px solid #d1d5db;
+    border-radius: 4px;
+    padding: 2px 6px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+/* ===== Table Hover States ===== */
+tbody tr {
+    transition: background-color 0.15s ease;
+}
+
+tbody tr:hover {
+    background-color: rgba(99, 102, 241, 0.04);
+}
+
+/* ===== Smooth Scrolling ===== */
+html {
+    scroll-behavior: smooth;
+}
+
+/* ===== Focus Visible for Accessibility ===== */
+button:focus-visible,
+a:focus-visible {
+    outline: 2px solid #6366f1;
+    outline-offset: 2px;
+}
+
+/* ===== Stats Cards ===== */
+.stat-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+/* ===== Hero Section ===== */
+.hero-gradient {
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%);
+}
+
+/* ===== Empty State Animations ===== */
+.bounce-slow {
+    animation: bounce-slow 2s ease-in-out infinite;
+}
+
+@keyframes bounce-slow {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+/* ===== Signal Weight Bar ===== */
+.signal-bar-positive {
+    background: linear-gradient(90deg, #22c55e 0%, #16a34a 100%);
+}
+
+.signal-bar-negative {
+    background: linear-gradient(90deg, #f87171 0%, #ef4444 100%);
+}
+
+/* ===== Mobile Responsive Tweaks ===== */
+@media (max-width: 640px) {
+    .rating-btn {
+        min-width: 44px;
+        min-height: 44px;
+    }
+
+    /* Larger tap targets for table rows */
+    tbody td {
+        padding-top: 1rem;
+        padding-bottom: 1rem;
+    }
+
+    /* Full height cards on mobile */
+    .mobile-full-card {
+        min-height: calc(100vh - 8rem);
+    }
+}
+
+/* ===== Custom Scrollbar ===== */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f5f9;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+/* ===== HTMX Loading States ===== */
+.htmx-request {
+    opacity: 0.7;
+    pointer-events: none;
+}
+
+.htmx-request .htmx-indicator {
+    display: inline-flex;
+}
+
+.htmx-indicator {
+    display: none;
+}
+
+/* ===== Rating Distribution Chart ===== */
+.rating-bar {
+    transition: width 0.7s ease-out;
+}
+
+.rating-bar-5 { background: linear-gradient(90deg, #22c55e, #16a34a); }
+.rating-bar-4 { background: linear-gradient(90deg, #84cc16, #65a30d); }
+.rating-bar-3 { background: linear-gradient(90deg, #eab308, #ca8a04); }
+.rating-bar-2 { background: linear-gradient(90deg, #f97316, #ea580c); }
+.rating-bar-1 { background: linear-gradient(90deg, #ef4444, #dc2626); }

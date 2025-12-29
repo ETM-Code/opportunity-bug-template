@@ -1,0 +1,47 @@
+# Environment
+.env
+.env.local
+.env.production
+
+# Personal config (contains profile data)
+data/sources.yaml
+
+# Claude docs cache (large, not needed for deployment)
+.claude_docs/
+.claude/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+*.so
+.eggs/
+*.egg-info/
+.venv/
+venv/
+ENV/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Build
+dist/
+build/
+*.egg
+
+# Logs
+*.log
+logs/
+openapi.documented.yml
+.claude
+.claude_docs

@@ -1,0 +1,101 @@
+# Opportunity Radar - Scheduled Pipeline
+# Uses GitHub Actions as a FREE cron scheduler
+# Wakes up Fly.io machine → runs task → machine auto-stops
+#
+# Estimated cost: ~$0.50-1/month (pay only for ~30min/day runtime)
+
+name: Scheduled Pipeline
+
+on:
+  schedule:
+    # Full pipeline with digest: 8am UTC daily
+    - cron: '0 8 * * *'
+    # Quick pages check: noon and 6pm UTC
+    - cron: '0 12,18 * * *'
+  workflow_dispatch:
+    inputs:
+      task:
+        description: 'Task to run'
+        required: true
+        default: 'run'
+        type: choice
+        options:
+          - run
+          - run --pages-only
+          - run --emails-only
+          - run --digest-only
+          - init
+
+env:
+  FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+
+jobs:
+  run-pipeline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Install flyctl
+        uses: superfly/flyctl-actions/setup-flyctl@master
+
+      - name: Determine command
+        id: cmd
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            CMD="${{ github.event.inputs.task }}"
+          elif [ "${{ github.event.schedule }}" = "0 8 * * *" ]; then
+            CMD="run"
+          else
+            CMD="run --pages-only"
+          fi
+          echo "cmd=$CMD" >> $GITHUB_OUTPUT
+          echo "Will run: python -m opportunity_radar.main $CMD"
+
+      - name: Run on Fly.io
+        run: |
+          # Get machine ID
+          MACHINE_ID=$(flyctl machines list --app opportunity-radar --json | jq -r '.[0].id // empty')
+
+          if [ -z "$MACHINE_ID" ]; then
+            echo "Error: No machine found. Deploy the app first with 'flyctl deploy'"
+            exit 1
+          fi
+
+          echo "Starting machine $MACHINE_ID..."
+          flyctl machines start $MACHINE_ID --app opportunity-radar
+
+          # Wait for machine to be running and healthy
+          echo "Waiting for machine to be ready..."
+          for i in {1..30}; do
+            STATE=$(flyctl machines list --app opportunity-radar --json | jq -r --arg id "$MACHINE_ID" '.[] | select(.id == $id) | .state')
+            echo "State: $STATE"
+            if [ "$STATE" = "started" ]; then
+              echo "Machine is running"
+              break
+            fi
+            sleep 5
+          done
+
+          # Wait a bit for the web server to fully start
+          sleep 10
+
+          # Run the batch job via SSH (timeout after 20 minutes)
+          echo "Running batch job via SSH..."
+          timeout 1200 flyctl ssh console --app opportunity-radar --command "python -m opportunity_radar.main ${{ steps.cmd.outputs.cmd }}" || {
+            EXIT_CODE=$?
+            if [ $EXIT_CODE -eq 124 ]; then
+              echo "Error: Batch job timed out after 20 minutes"
+            else
+              echo "Batch job exited with code $EXIT_CODE"
+            fi
+            exit $EXIT_CODE
+          }
+
+          # Stop the machine when done
+          echo "Stopping machine..."
+          flyctl machines stop $MACHINE_ID --app opportunity-radar || true
+
+      - name: Show logs
+        if: always()
+        run: |
+          echo "=== Recent logs ==="
+          flyctl logs --app opportunity-radar -n 100 || true

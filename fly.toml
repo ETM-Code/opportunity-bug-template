@@ -1,0 +1,43 @@
+# Opportunity Radar - Fly.io Configuration
+# See https://fly.io/docs/reference/configuration/ for reference
+#
+# Web UI with scale-to-zero: auto-stops when idle, auto-starts on request.
+# Batch jobs run via: flyctl machine run ... -- python -m opportunity_radar.main run
+
+app = "opportunity-radar"
+primary_region = "lhr"  # London - close to Ireland
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  PYTHONUNBUFFERED = "1"
+  TZ = "Europe/Dublin"
+  FLARESOLVERR_URL = "http://opp-radar-flaresolverr.internal:8191/v1"
+
+# Web server configuration
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = "stop"
+  auto_start_machines = true
+  min_machines_running = 0  # Scale to zero when idle
+  processes = ["app"]
+
+  [http_service.concurrency]
+    type = "connections"
+    hard_limit = 25
+    soft_limit = 20
+
+[[http_service.checks]]
+  grace_period = "10s"
+  interval = "30s"
+  method = "GET"
+  path = "/health"
+  timeout = "5s"
+
+# VM config - 4GB needed for Playwright browser stability during batch jobs
+[[vm]]
+  memory = "4gb"
+  cpu_kind = "performance"
+  cpus = 1

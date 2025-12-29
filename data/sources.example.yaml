@@ -1,0 +1,149 @@
+# OpportunityBug - Source Configuration
+# Copy this file to sources.yaml and customize with your profile
+#
+# cp data/sources.example.yaml data/sources.yaml
+
+# =============================================================================
+# USER PROFILE (used for relevance scoring)
+# =============================================================================
+user_profile:
+  name: "Your Name"
+  email: "your-email@example.com"
+
+  background: |
+    Brief description of your background and experience.
+    Include: education, projects, skills, research interests.
+    The AI uses this to score opportunity relevance.
+
+  interests:
+    - "AI/ML"
+    - "Systems programming"
+    - "Research"
+    # Add more interests relevant to you
+
+  constraints:
+    location: "Your Country"
+    requires_travel_support: true  # Set to false if you can self-fund travel
+    student_status: "undergraduate"  # or "graduate", "phd", "professional"
+    graduation_year: 2027
+
+  high_value_signals:
+    - "Pays for travel/flights/accommodation"
+    - "Stipend, salary, or prize money"
+    - "Top company or university"
+    - "Competitive/selective program"
+    - "Direct path to job offer"
+    # Add signals that indicate high-value opportunities for YOU
+
+  low_value_signals:
+    - "Unpaid with no travel support"
+    - "Requires completed PhD"
+    - "US citizens only (unless visa sponsored)"
+    # Add signals that indicate low-value opportunities for YOU
+
+# =============================================================================
+# PAGE MONITORING SOURCES
+# =============================================================================
+# Career pages and job boards to scrape for opportunities.
+
+page_sources:
+  # --- Example: AI Lab Careers ---
+  - name: "OpenAI Careers"
+    url: "https://openai.com/careers/"
+    check_frequency_hours: 12
+    priority: "critical"
+    tags: ["ai", "frontier", "research", "engineering"]
+    use_browser: true
+    link_pattern: "/careers/[^/]+$"
+    max_links: 15
+
+  - name: "Anthropic Jobs"
+    url: "https://www.anthropic.com/jobs"
+    check_frequency_hours: 12
+    priority: "critical"
+    tags: ["ai", "safety", "research"]
+    use_browser: true
+
+  # --- Example: Hackathons ---
+  - name: "Lablab.ai Hackathons"
+    url: "https://lablab.ai/event"
+    check_frequency_hours: 12
+    priority: "high"
+    tags: ["ai", "hackathon", "llm"]
+    use_browser: true
+
+  - name: "Devpost Hackathons"
+    url: "https://devpost.com/hackathons?order_by=deadline"
+    check_frequency_hours: 24
+    priority: "high"
+    tags: ["hackathon", "competition", "prizes"]
+    use_browser: true
+    wait_for: ".hackathons-container"
+    link_pattern: "/hackathons/"
+    max_links: 15
+
+  # --- Example: Fellowships ---
+  - name: "80,000 Hours Job Board"
+    url: "https://jobs.80000hours.org/"
+    check_frequency_hours: 12
+    priority: "high"
+    tags: ["ai", "safety", "research", "fellowship"]
+    use_browser: true
+    wait_for: "[class*='job'], .ais-Hits"
+    link_pattern: "/jobs/"
+    max_links: 20
+
+  # Add more sources relevant to your interests...
+
+# =============================================================================
+# EMAIL NEWSLETTER SOURCES
+# =============================================================================
+# Newsletters parsed via IMAP. Create Gmail filters to label these emails.
+
+email_sources:
+  - name: "Intern Insider"
+    sender_patterns:
+      - "*@interninsider.me"
+    gmail_label: "src/interninsider"
+    priority: "high"
+    tags: ["internship", "hackathon", "tech"]
+
+  - name: "80,000 Hours Job Board"
+    sender_patterns:
+      - "*@80000hours.org"
+    gmail_label: "src/80k"
+    priority: "high"
+    tags: ["ai", "safety", "research"]
+
+  # Add more newsletters you subscribe to...
+
+# =============================================================================
+# DIGEST CONFIGURATION
+# =============================================================================
+
+digest:
+  frequency: "daily"
+  send_time: "08:00"
+  timezone: "Europe/Dublin"  # Change to your timezone
+  max_items: 10
+  min_items: 0
+
+  grouping:
+    - label: "Urgent"
+      condition: "deadline < 7 days"
+      emoji: "red"
+    - label: "This Month"
+      condition: "deadline < 30 days"
+      emoji: "yellow"
+    - label: "Coming Up"
+      condition: "deadline >= 30 days OR no deadline"
+      emoji: "green"
+
+  include_fields:
+    - "title"
+    - "organization"
+    - "deadline"
+    - "stipend_info"
+    - "travel_support"
+    - "one_line_summary"
+    - "apply_url"

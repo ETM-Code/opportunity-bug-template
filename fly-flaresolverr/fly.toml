@@ -1,0 +1,30 @@
+# FlareSolverr - Cloudflare bypass proxy
+# Companion app for Opportunity Radar
+# See https://github.com/FlareSolverr/FlareSolverr
+
+app = "opp-radar-flaresolverr"
+primary_region = "lhr"
+
+[build]
+  image = "ghcr.io/flaresolverr/flaresolverr:latest"
+
+[env]
+  LOG_LEVEL = "info"
+  LOG_HTML = "false"
+  CAPTCHA_SOLVER = "none"
+  TZ = "Europe/Dublin"
+  HOST = "0.0.0.0"
+  PORT = "8191"
+
+# Internal HTTP service - accessible via opp-radar-flaresolverr.internal:8191
+[http_service]
+  internal_port = 8191
+  force_https = false
+  auto_stop_machines = "stop"
+  auto_start_machines = true
+  min_machines_running = 0
+
+[[vm]]
+  memory = "512mb"
+  cpu_kind = "shared"
+  cpus = 1
